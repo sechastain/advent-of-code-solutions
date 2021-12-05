@@ -7,4 +7,5 @@ properly modularize it so that my functions are clean and purely re-usable betwe
 I could have been closer, I think, if I gave it more time - I'll give the two parts another look
 before I start tomorrow to see if I can spot a pattern for improvement
 
+I'm still not using fileinput.input as Jason has suggested :sweat_smile:
 
