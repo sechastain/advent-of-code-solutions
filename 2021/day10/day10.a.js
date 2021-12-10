@@ -17,15 +17,19 @@ function isOpenChar(ch) {
 }
 
 function parseChunk(line, offset, autocomplete) {
+  if(offset >= line.length) {
+    return [undefined, offset]; // end of line - no child chunks to return
+  } 
+
   const chunks = [];
   const ch = line[offset];
+  chunks.ch = ch;
 
-  if(offset === line.length) {
-    return [undefined, offset];
-  } else if(!isOpenChar(ch)) {
-    return [undefined, offset];
+  if(!isOpenChar(ch)) {
+    return [undefined, offset]; // end of chunk - no child chunks to return
   }
 
+  // process inner chunks
   let nxtoff = offset+1;
   do {
     [child_chunks, nxtoff] = parseChunk(line, nxtoff, autocomplete);
@@ -34,6 +38,7 @@ function parseChunk(line, offset, autocomplete) {
     }
   } while(isOpenChar(line[nxtoff]));
 
+  // if at or beyond end of line
   if(nxtoff >= line.length) {
     if(!autocomplete) {
       throw ['incomplete', line.length];
@@ -43,8 +48,11 @@ function parseChunk(line, offset, autocomplete) {
       return [chunks, nxtoff+1];
     }
   } else if(openCloser[ch] === line[nxtoff]) {
+    // if closing character pairs with opening character
+    // return this chunk and the index of the start of the next chunk
     return [chunks, nxtoff+1];
   } else {
+    // throw syntax error with offending character and character position
     throw [line[nxtoff], nxtoff];
   }
 }
