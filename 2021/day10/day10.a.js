@@ -29,10 +29,11 @@ function parseChunk(line, offset, autocomplete) {
     return [undefined, offset]; // end of chunk - no child chunks to return
   }
 
-  // process inner chunks
+  // process inner chunks - increment offset by one
   let nxtoff = offset+1;
   do {
     [child_chunks, nxtoff] = parseChunk(line, nxtoff, autocomplete);
+    // if parseChunk immediately closes, child_chunks will be undefined
     if(child_chunks) {
       chunks.push(child_chunks);
     }
