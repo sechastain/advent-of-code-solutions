@@ -19,10 +19,10 @@ def scoreLine(total, line):
 
 squad = []
 def scoreCommon(total, line):
-  line = list(line.strip())
+  line = set(list(line.strip()))
 
   global squad
-  squad = squad + [set(list(line))]
+  squad = squad + [line]
   if len(squad) == 3:
     squadScore = scoreChar(next(iter(reduce(lambda x, y: x & y, squad))))
     squad = []
