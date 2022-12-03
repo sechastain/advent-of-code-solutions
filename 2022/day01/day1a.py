@@ -1,15 +1,7 @@
 
 import sys
 
-def readlines(file):
-  lines = []
-  
-  with open(file, 'r') as f:
-    lines = f.readlines()
-
-  lines = [l.strip() for l in lines]
-  
-  return lines
+from ..utils.io import readlines
 
 calories = readlines(sys.argv[1])
 
