@@ -15,8 +15,7 @@ def scoreLine(total, line):
   return total + (1 if overlap in [first, second] else 0)
 
 def scoreAnyOverlap(total, line):
-  line = line.strip()
-  [first, second] = [make_range(l) for l in line.split(',')]
+  [first, second] = [make_range(l) for l in line.strip().split(',')]
   overlap = first & second
   return total + (1 if len(overlap) > 0 else 0)
 
