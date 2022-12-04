@@ -5,14 +5,12 @@ from ..utils.io import readlines
 from functools import reduce
 
 def make_range(input):
-  input = input.split('-')
-  input = [int(i) for i in input]
+  input = [int(i) for i in input.split('-')]
   input[-1] += 1
   return set(range(*input))
 
 def scoreLine(total, line):
-  line = line.strip()
-  [first, second] = [make_range(l) for l in line.split(',')]
+  [first, second] = [make_range(l) for l in line.strip().split(',')]
   overlap = first & second
   return total + (1 if overlap in [first, second] else 0)
 
