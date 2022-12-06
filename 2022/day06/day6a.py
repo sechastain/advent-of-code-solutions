@@ -7,15 +7,10 @@ from functools import reduce
 
 def buffFinderFn(buffSize):
   def processLine(_, line):
-    off = 0
-
-    found = False
-    while not found:
+    for off in range(len(line)-buffSize):
       if len(set(line[off:off+buffSize])) == buffSize:
-        found = True
-      else:
-        off += 1
-    return off + buffSize
+        return off + buffSize
+    return -1
   return processLine
 
 print(readlines(sys.argv[1], buffFinderFn(4), ''))
