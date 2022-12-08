@@ -59,9 +59,9 @@ class State:
 
     while len(dirs) > 0:
       d = dirs.pop(0)
+      dirs.extend(d.child_dirs.values())
       if d.size > needed_space and d.size < deldir.size:
         deldir = d
-        dirs.extend(d.child_dirs.values())
 
     return deldir
     
