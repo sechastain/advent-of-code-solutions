@@ -32,22 +32,19 @@ class Board:
     fromPt = (500,0)
     while True:
       candidates = [(fromPt[0] + i, fromPt[1]+1) for i in range(-1,2)]
-      if intoInfinity and candidates[0][1] > self.max:
+      candidates = [candidates[i] for i in [1, 0, 2] if candidates[i] not in self.occupied]
+      if len(candidates) == 0:
+        self.occupied.add(fromPt)
+        self.sand += 1
+        return True
+      elif intoInfinity and candidates[0][1] > self.max:
         return False 
       elif not intoInfinity and candidates[0][1] == self.max+2:
         self.occupied.add(fromPt)
         self.sand += 1
         return True
-      elif candidates[1] not in self.occupied:
-        fromPt = candidates[1]
-      elif candidates[0] not in self.occupied:
-        fromPt = candidates[0]
-      elif candidates[2] not in self.occupied:
-        fromPt = candidates[2]
       else:
-        self.occupied.add(fromPt)
-        self.sand += 1
-        return True
+        fromPt = candidates[0]
 
 def parseLine(board, line):
   points = [p for p in line.split(' ') if p != '->']
@@ -66,6 +63,5 @@ board = readlines(sys.argv[1], parseLine, Board())
 board.determine_max_depth()
 while (500, 0) not in board.occupied:
   board.drop_sand(False)
-  pass
 print(board.sand)
 
