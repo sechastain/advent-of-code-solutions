@@ -113,7 +113,7 @@ def findDestination2(seed, ranges):
 def walkSeedsToDestination2(seeds, origin, destination, maps):
   while origin != destination:
     amap = maps[origin]
-    print(seeds)
+    #print(seeds)
     seeds = [findDestination2(seed, amap['ranges']) for seed in seeds]
     seeds = [seed for seedlist in seeds for seed in seedlist]
     origin = amap['destination']
