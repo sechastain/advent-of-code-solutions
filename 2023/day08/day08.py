@@ -4,6 +4,7 @@ import re
 
 from functools import reduce
 from collections import namedtuple
+import struct
 
 Node = namedtuple('Node', ['left', 'right', 'exit', 'bitmask'])
 
@@ -34,18 +35,22 @@ def parseLine(nodes, line):
   
   return nodes
 
-def walk(directions, nodes):
+def walkIt(directions, nodes, start, end=None):
   i = 0
-  node = 'AAA'
+  node = start
   dirs = directions[0:]
-  while node != 'ZZZ':
+  while node != end and node[-1] != 'Z':
     i += 1
     dir = dirs.pop(0)
     node = nodes[node][dir]
     if len(dirs) == 0:
       dirs = directions[0:]
     
-  return i
+  return i, node
+
+
+def walk(directions, nodes, start='AAA'):
+  return walkIt(directions, nodes, 'AAA', 'ZZZ')[0]
 
 def inputMap(directions, nodes):
   for node, ntuple in nodes.items():
@@ -56,9 +61,14 @@ def inputMap(directions, nodes):
     for dir in directions:
       current = nodes[current][dir]
       bitmask += [1 if current[-1] == 'Z' else 0]
-    nodes[node] = Node(ntuple.left, ntuple.right, current, bitmask)
+    nodes[node] = Node(ntuple.left, ntuple.right, current, int(''.join(str(b) for b in bitmask), 2))
 
 def ghostwalk(directions, nodes):
+  current = [n for n in nodes.keys() if n[-1] == 'A']
+  print([(c, walkIt(directions, nodes, c)) for c in current])
+  
+
+def ghostwalk2(directions, nodes):
   inputMap(directions, nodes)
   print('done mapping')
   current = [n for n in nodes.keys() if n[-1] == 'A']
@@ -69,10 +79,12 @@ def ghostwalk(directions, nodes):
     #print(current)
     bitmasks = [nodes[n].bitmask for n in current]
     #print(bitmasks)
-    bitmasks = reduce(lambda x, y: [a and b for a, b in zip(x, y)], bitmasks)
-    if 1 in bitmasks:
-      print('found', iter, len(directions), bitmasks.index(1), bitmasks)
-      return iter * len(directions) + bitmasks.index(1) + 1
+    bitmasks = reduce(lambda x, y: x & y, bitmasks)
+    if bitmasks != 0:
+      print('found', iter, len(directions), bitmasks)
+      bitmasks = "{0:b}".format(bitmasks)
+      print(bitmasks)
+      return iter * len(directions) + bitmasks.index('1') + 1
     current = [nodes[n].exit for n in current]
     iter += 1
 
@@ -97,6 +109,6 @@ def ghostwalkLongtime(directions, nodes):
 
 nodes = readlines(sys.argv[1], parseLine, {})
 #print(nodes)
-#print(walk(nodes['dirs'], nodes))
+print(walk(nodes['dirs'], nodes))
 print(ghostwalk(nodes['dirs'], nodes))
 
