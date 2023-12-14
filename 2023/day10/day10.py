@@ -110,18 +110,18 @@ def findLoop(amap, start):
 
 def findTwos(amap, zero):
   row, col = zero
+  if amap[row][col] == 1:
+    return []
   twos = [
-    (row-1, col-1),
+#    (row-1, col-1),
     (row-1, col),
-    (row-1, col+1),
-    (row+1, col-1),
-    (row+1, col),
-    (row+1, col+1),
+#    (row-1, col+1),
     (row, col-1),
     (row, col+1),
+#    (row+1, col-1),
+    (row+1, col),
+#    (row+1, col+1),
   ]
-  if zero == (8,5):
-    print(twos)
   twos = [(row, col) for row, col in twos if row >=0 and row < len(amap) and col >= 0 and col < len(amap[row])]
   twos = [(row, col) for row, col in twos if amap[row][col] == 2]
   for t in twos:
@@ -129,27 +129,62 @@ def findTwos(amap, zero):
     amap[row][col] = 0
   return twos
 
+def doubleLoop(loop):
+  dbl = lambda x: int(2*x)
+  steps = []
+  for s in range(1, len(loop)):
+    p = s-1
+    prior = loop[p]
+    step = loop[s]
+    r1, c1 = prior
+    r2, c2 = step
+
+    r1 = dbl(r1)
+    c1 = dbl(c1)
+    r2 = dbl(r2)
+    c2 = dbl(c2)
+
+    mid = (int((r1 + r2)/2), int((c1 + c2)/2))
+    steps += [(r1, c1), mid]
+  r1, c1 = loop[-1]
+  r2, c2 = loop[0]
+  r1 = dbl(r1)
+  c1 = dbl(c1)
+  r2 = dbl(r2)
+  c2 = dbl(c2)
+  steps += [(r1, c1), (int((r1 + r2)/2), int((c1 + c2)/2))]
+  #print(steps)
+  return steps
 
 def remap(amap, loop):
-  amap = [[2] * len(m) for m in amap]
+  loop = doubleLoop(loop)
+
+  amap = [[2] * len(amap[0]) * 2 for m in range(len(amap)*2)]
   amap[0] = [0] * len(amap[0])
   amap[-1] = [0] * len(amap[0])
+
   for row in amap:
     row[0] = 0
     row[-1] = 0
+    #print(''.join(str(s) for s in row))
+
   for row, col in loop:
+    #print(row, col)
     amap[row][col] = 1
   zeroes  = list([(0, i) for i in range(len(amap[ 0]))])
   zeroes += list([(len(amap)-1, i) for i in range(len(amap[-1]))])
   zeroes += list([(i, 0) for i in range(len(amap))])
   zeroes += list([(i, len(amap[i])-1) for i in range(len(amap))])
-  print(zeroes)
+  #print(zeroes)
   while len(zeroes) > 0:
     zero = zeroes.pop(0)
     zeroes += findTwos(amap, zero)
 
   for row in amap:
     print(''.join(str(c) for c in row))
+
+  amap = amap[::2]
+  amap = [m[::2] for m in amap]
   
   print(sum([row.count(2) for row in amap]))
 
