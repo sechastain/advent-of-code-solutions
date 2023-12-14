@@ -19,6 +19,38 @@ def readlines(file, reduceFn = stripReduce, reduceInit = []):
 
   return reduce(reduceFn, lines, reduceInit)
 
+def rollInPlace(amap, row, dir):
+  if row == True:
+    indexes = list(range(len(amap[0])))[::dir]
+    for row in amap:
+      next = indexes[0]
+      for i in indexes:
+        item = row[i]
+        if item == '#':
+          next = i + dir
+        elif item == 'O':
+          row[i] = '.'
+          row[next] = 'O'
+          next = next + dir
+  else:
+    indexes = list(range(len(amap)))[::dir]
+    for c in range(len(amap[0])):
+      next = indexes[0]
+      for i in indexes:
+        item = amap[i][c]
+        if item == '#':
+          next = i + dir
+        elif item == 'O':
+          amap[i][c] = '.'
+          amap[next][c] = 'O'
+          next = next + dir
+  return amap
+
+north = lambda amap: rollInPlace(amap, False,  1)
+south = lambda amap: rollInPlace(amap, False, -1)
+east  = lambda amap: rollInPlace(amap, True,  -1)
+west  = lambda amap: rollInPlace(amap, True,   1)
+
 def rollUp(row):
   row = row[:]
   next = 0
@@ -52,17 +84,27 @@ def rollAndScore(amap):
 amap = readlines(sys.argv[1])
 print(rollAndScore(amap))
 
-rotFlip = lambda x: list(map(list, zip(*x[::-1])))
-
 def printMap(amap):
   for row in amap:
     print(''.join(row))
 
-amap = readlines(sys.argv[1])
-ops = [rotFlip, rotFlip, rotFlip, rotFlip]
+encoded = {}
+def encode(amap, i):
+  key = ''.join([item for row in amap for item in row])
+  if key in encoded:
+    return True, key
+  encoded[key] = i
+  return False, key
 
+amap = readlines(sys.argv[1])
 for i in range(1000000000):
-  if i %       1000000 == 0:
-    print(i)
-  amap = reduce(lambda amap, fn: fn(roll(amap)), ops, amap)
+  east(south(west(north(amap))))
+  looped, key = encode(amap, i)
+  if looped:
+    loops = i - encoded[key]
+    loops = (1000000000 - encoded[key] - 1) % loops
+    for j in range(loops):
+      east(south(west(north(amap))))
+    break
 print(score(amap))
+
