@@ -91,11 +91,7 @@ def maxMap(amap):
   left = [Photon(r, 0, 0, 1) for r in range(rows)]
   right = [Photon(r, cols-1, 0, -1) for r in range(rows)]
   
-  tovisit = []
-  tovisit.extend(top)
-  tovisit.extend(bottom)
-  tovisit.extend(left)
-  tovisit.extend(right)
+  tovisit = top + bottom + left + right
 
   def maxtest(max, p):
     visited = fillMap(amap, p)
